@@ -40,23 +40,29 @@ class GameGrid {
     GameGrid() : grid_status(GRID_STATUS_NONE) {};
     bool isNone() { return grid_status == GRID_STATUS_NONE; };
     int getGridStatus(){ return grid_status; };
-    bool setGridStatus(int state) {
-      if(state >= GRID_STATUS_NONE && state < GRID_STATUS_ERROR && grid_status == GRID_STATUS_NONE){
-        grid_status = state; return true;
-      }else{
-        return false;
-      }
-    };
+    bool setGridStatus(int state)
+      {
+        if(state >= GRID_STATUS_NONE && state < GRID_STATUS_ERROR && grid_status == GRID_STATUS_NONE)
+          {
+            grid_status = state; return true;
+          }
+        else
+          {
+            return false;
+          }
+      };
 
-    const char *toStr() {
-      return  (grid_status == GRID_STATUS_MARU)  ? maru  :
-              (grid_status == GRID_STATUS_BATSU) ? batsu : none;
-    };
+    const char *toStr()
+      {
+        return  (grid_status == GRID_STATUS_MARU)  ? maru  :
+                (grid_status == GRID_STATUS_BATSU) ? batsu : none;
+      };
 
-    static const char *toStr(int status) {
-      return  (status == GRID_STATUS_MARU)  ? maru  :
-              (status == GRID_STATUS_BATSU) ? batsu : none;
-    };
+    static const char *toStr(int status)
+      {
+        return  (status == GRID_STATUS_MARU)  ? maru  :
+                (status == GRID_STATUS_BATSU) ? batsu : none;
+      };
 
 
   private:

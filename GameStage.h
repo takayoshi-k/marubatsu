@@ -41,153 +41,221 @@ class GameStage {
 
   private:
     GameGrid stage[GRID_HEIGHT][GRID_WIDTH];
+    int stage_array[GRID_HEIGHT * GRID_WIDTH];
 
     int pos_x, pos_y;
 
   public:
-    GameStage() : pos_x(0), pos_y(0) {};
-
-    bool isInside(int pos_w, int pos_h) {
-      return  pos_w >= 0         &&
-              pos_w < GRID_WIDTH &&
-              pos_h >= 0         &&
-              pos_h < GRID_HEIGHT;
-    };
-
-    int getGridStatus(int pos_w, int pos_h){
-      int ret = GameGrid::GRID_STATUS_ERROR;
-      if ( isInside(pos_w, pos_h) ) {
-        ret = stage[pos_h][pos_w].getGridStatus();
-      }
-      return ret;
-    };
-
-    bool setGridStatus(int pos_w, int pos_h, int state){
-      if ( isInside(pos_w, pos_h) ) {
-        return stage[pos_h][pos_w].setGridStatus(state);
-      }else{
-        return false;
-      }
-    };
-
-    const char *toStr(int pos_w, int pos_h){
-      if ( isInside(pos_w, pos_h) ) {
-        return stage[pos_h][pos_w].toStr();
-      }else{
-        return "";
-      }
-    };
-
-    const char *posCol(int x, int y){
-      return (x==pos_x && y==pos_y) ? "\033[41m" : "";
-    };
-
-    void printStage() {
-      int i, j;
-      printf("\033[2J");    // Clear Screen
-      printf("\033[0;0H");  // Move Cursor to 0,0
-      for(j=0; j<GRID_HEIGHT; j++){
-        for(i=0; i<GRID_WIDTH; i++){
-          printf("%s%s\033[49m", posCol(i,j), toStr(i,j));
-          if ( i != (GRID_WIDTH-1) ){
-            printf("|");
-          }
-        }
-        printf("\n");
-        if ( j != (GRID_HEIGHT-1) ){
-          for(i=0; i<(GRID_WIDTH*2-1); i++) printf("-");
-          printf("\n");
-        }
-      }
-    };
-
-    int checkWinner() {
-      // This is just 3x3 field case...
-      static const int winning_pattern[][GRID_HEIGHT][GRID_WIDTH] = {
-        { {1, 1, 1},
-          {0, 0, 0},
-          {0, 0, 0} },
-        { {0, 0, 0},
-          {1, 1, 1},
-          {0, 0, 0} },
-        { {0, 0, 0},
-          {0, 0, 0},
-          {1, 1, 1} },
-        { {1, 0, 0},
-          {1, 0, 0},
-          {1, 0, 0} },
-        { {0, 1, 0},
-          {0, 1, 0},
-          {0, 1, 0} },
-        { {0, 0, 1},
-          {0, 0, 1},
-          {0, 0, 1} },
-        { {0, 0, 1},
-          {0, 1, 0},
-          {1, 0, 0} },
-        { {1, 0, 0},
-          {0, 1, 0},
-          {0, 0, 1} }
+    GameStage() : pos_x(0), pos_y(0)
+      {
+        updateArray();
       };
-      #define PTN_SIZE (sizeof(winning_pattern)/sizeof(int[GRID_HEIGHT][GRID_WIDTH]))
 
-      int p, i, j, s;
-      bool win;
-      for(p=0; p<PTN_SIZE; p++){
-        s = -1;
-        win = true;
-        for(j=0; j<GRID_HEIGHT; j++){
-          for(i=0; i<GRID_WIDTH; i++){
-            if (s == -1 && winning_pattern[p][j][i]){
-              s = getGridStatus(j, i);
-            }else if ( s!=-1 && s!=getGridStatus(j,i) && winning_pattern[p][j][i] ){
-              win = false;
-            }
+    bool isInside(int pos_w, int pos_h)
+      {
+        return  pos_w >= 0         &&
+                pos_w < GRID_WIDTH &&
+                pos_h >= 0         &&
+                pos_h < GRID_HEIGHT;
+      };
+
+    int getGridStatus(int pos_w, int pos_h)
+      {
+        int ret = GameGrid::GRID_STATUS_ERROR;
+        if ( isInside(pos_w, pos_h) )
+          {
+            ret = stage[pos_h][pos_w].getGridStatus();
           }
-        }
-        if (win && (s!=-1 || s!=GameGrid::GRID_STATUS_NONE) ){
-          return s;
-        }
-      }
+        return ret;
+      };
 
-      return GameGrid::GRID_STATUS_NONE;
-    };
-
-    bool moveCursor(int direction, int current_player){
-      bool change_player = false;
-      switch(direction){
-        case CURSOR_DIRECTION_UP:
-          pos_y--; if (pos_y < 0) pos_y = 0;
-          break;
-        case CURSOR_DIRECTION_DOWN:
-          pos_y++; if (pos_y >= GRID_HEIGHT) pos_y = GRID_HEIGHT-1;
-          break;
-        case CURSOR_DIRECTION_LEFT:
-          pos_x--; if (pos_x < 0) pos_x = 0;
-          break;
-        case CURSOR_DIRECTION_RIGHT:
-          pos_x++; if (pos_x >= GRID_WIDTH) pos_x = GRID_WIDTH-1;
-          break;
-        case CURSOR_DIRECTION_DECIDE:
-          if (setGridStatus(pos_x, pos_y, current_player) ) {
-            change_player = true;
+    bool setGridStatus(int pos_w, int pos_h, int state)
+      {
+        if ( isInside(pos_w, pos_h) )
+          {
+            return stage[pos_h][pos_w].setGridStatus(state);
           }
-          break;
-        default:
-          break;
-      }
-      return change_player;
-    };
+        else
+          {
+            return false;
+          }
+      };
 
-    void hideCursor(){
-      pos_x = -1;
-      pos_y = -1;
-    };
+    const char *toStr(int pos_w, int pos_h)
+      {
+        if ( isInside(pos_w, pos_h) )
+          {
+            return stage[pos_h][pos_w].toStr();
+          }
+        else
+          {
+            return "";
+          }
+      };
 
-    void dispCursor(){
-      pos_x = 0;
-      pos_y = 0;
-    };
+    const char *posCol(int x, int y)
+      {
+        return (x==pos_x && y==pos_y) ? "\033[41m" : "";
+      };
+
+    void printStage()
+      {
+        int i, j;
+        printf("\033[2J");    // Clear Screen
+        printf("\033[0;0H");  // Move Cursor to 0,0
+        for(j=0; j<GRID_HEIGHT; j++)
+          {
+            for(i=0; i<GRID_WIDTH; i++)
+              {
+                printf("%s%s\033[49m", posCol(i,j), toStr(i,j));
+                if ( i != (GRID_WIDTH-1) )
+                  {
+                    printf("|");
+                  }
+              }
+            printf("\n");
+            if ( j != (GRID_HEIGHT-1) )
+              {
+                for(i=0; i<(GRID_WIDTH*2-1); i++) printf("-");
+                printf("\n");
+              }
+          }
+      };
+
+    int checkWinner()
+      {
+        // This is just 3x3 field case...
+        static const int winning_pattern[][GRID_HEIGHT][GRID_WIDTH] = {
+          { {1, 1, 1},
+            {0, 0, 0},
+            {0, 0, 0} },
+          { {0, 0, 0},
+            {1, 1, 1},
+            {0, 0, 0} },
+          { {0, 0, 0},
+            {0, 0, 0},
+            {1, 1, 1} },
+          { {1, 0, 0},
+            {1, 0, 0},
+            {1, 0, 0} },
+          { {0, 1, 0},
+            {0, 1, 0},
+            {0, 1, 0} },
+          { {0, 0, 1},
+            {0, 0, 1},
+            {0, 0, 1} },
+          { {0, 0, 1},
+            {0, 1, 0},
+            {1, 0, 0} },
+          { {1, 0, 0},
+            {0, 1, 0},
+            {0, 0, 1} }
+        };
+        #define PTN_SIZE (sizeof(winning_pattern)/sizeof(int[GRID_HEIGHT][GRID_WIDTH]))
+
+        int ptn, i, j, state;
+        bool win;
+        for(ptn=0; ptn<PTN_SIZE; ptn++)
+          {
+            state = -1;
+            win = true;
+            for(j=0; j<GRID_HEIGHT; j++)
+              {
+                for(i=0; i<GRID_WIDTH; i++)
+                  {
+                    if (state == -1 && winning_pattern[ptn][j][i])
+                      {
+                        state = getGridStatus(j, i);
+                      }
+                    else if ( state!=-1 && state!=getGridStatus(j,i) && winning_pattern[ptn][j][i] )
+                      {
+                        win = false;
+                      }
+                  }
+              }
+            if (win && (state!=-1 || state!=GameGrid::GRID_STATUS_NONE) )
+              {
+                return state;
+              }
+          }
+
+        return GameGrid::GRID_STATUS_NONE;
+      };
+
+    bool checkDraw()
+      {
+        int i, j;
+        for(j=0; j<GRID_HEIGHT; j++)
+          {
+            for(i=0; i<GRID_WIDTH; i++)
+              {
+                if ( getGridStatus(i, j) == GameGrid::GRID_STATUS_NONE )
+                  {
+                    return false;
+                  }
+              }
+          }
+        return true;
+      };
+
+    void updateArray()
+      {
+        int i, j;
+        for(j=0; j<GRID_HEIGHT; j++)
+          {
+            for(i=0; i<GRID_WIDTH; i++)
+              {
+                stage_array[j*GRID_HEIGHT + i] = getGridStatus(j, i);
+              }
+          }
+      };
+
+    int *getArray()
+      {
+        updateArray();
+        return stage_array;
+      };
+
+    bool handleInput(int direction, int current_player)
+      {
+        bool change_player = false;
+        switch(direction)
+          {
+            case CURSOR_DIRECTION_UP:
+              pos_y--; if (pos_y < 0) pos_y = 0;
+              break;
+            case CURSOR_DIRECTION_DOWN:
+              pos_y++; if (pos_y >= GRID_HEIGHT) pos_y = GRID_HEIGHT-1;
+              break;
+            case CURSOR_DIRECTION_LEFT:
+              pos_x--; if (pos_x < 0) pos_x = 0;
+              break;
+            case CURSOR_DIRECTION_RIGHT:
+              pos_x++; if (pos_x >= GRID_WIDTH) pos_x = GRID_WIDTH-1;
+              break;
+            case CURSOR_DIRECTION_DECIDE:
+              if (setGridStatus(pos_x, pos_y, current_player) )
+                {
+                  change_player = true;
+                }
+              break;
+            default:
+              break;
+          }
+        return change_player;
+      };
+
+    void hideCursor()
+      {
+        pos_x = -1;
+        pos_y = -1;
+      };
+
+    void dispCursor()
+      {
+        pos_x = 0;
+        pos_y = 0;
+      };
 
 };
 

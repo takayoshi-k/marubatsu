@@ -26,9 +26,18 @@
 #include <termios.h>
 #include <unistd.h>
 
+/* Eigen includes */
+#define EIGEN_NO_DEBUG // コード内のassertを無効化．
+#define EIGEN_DONT_VECTORIZE // SIMDを無効化．
+#define EIGEN_DONT_PARALLELIZE // 並列を無効化．
+#define EIGEN_MPL2_ONLY // LGPLライセンスのコードを使わない．
+
+#include <Eigen/Core>
+
 #include "GameStage.h"
 
 struct termios oldt, newt;
+
 
 void init_termios(void)
 {
@@ -37,11 +46,23 @@ void init_termios(void)
   newt.c_lflag &= ~(ICANON);
   tcsetattr(STDIN_FILENO, TCSANOW, &newt);
 }
+
+
 void final_termios(void)
 {
   tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 }
 
+
+bool human_input(GameStage *stage, int c, int player)
+{
+  return stage->handleInput(c, player);
+}
+
+bool machine_input(GameStage *stage, int c, int player)
+{
+  return false;
+}
 
 int main(void)
 {
@@ -52,21 +73,36 @@ int main(void)
 
   player = GameGrid::GRID_STATUS_MARU;
   init_termios();
-  while(playing){
-    stage.printStage();
-    c = getchar();
-    if (stage.moveCursor(c, player)) {
-      if( stage.checkWinner() != GameGrid::GRID_STATUS_NONE ){
-        stage.printStage();
-        printf("Player %s Win!!\n", GameGrid::toStr(player));
-        playing = false;
-      }else{
-        player = (player == GameGrid::GRID_STATUS_MARU) ? GameGrid::GRID_STATUS_BATSU : GameGrid::GRID_STATUS_MARU;
-      }
-    }else if (c == 'q'){
-      playing = false;
+  while(playing)
+    {
+      stage.printStage();
+      c = getchar();
+      // if (stage.handleInput(c, player))
+      if (human_input(&stage, c, player))
+        {
+          if( stage.checkWinner() != GameGrid::GRID_STATUS_NONE )
+            {
+              stage.printStage();
+              printf("Player %s Win!!\n", GameGrid::toStr(player));
+              playing = false;
+            }
+          else if( stage.checkDraw() )
+            {
+              stage.printStage();
+              printf("Draw this Game...\n");
+              playing = false;
+            }
+          else
+            {
+              player = (player == GameGrid::GRID_STATUS_MARU) ?
+                                  GameGrid::GRID_STATUS_BATSU : GameGrid::GRID_STATUS_MARU;
+            }
+        }
+      else if (c == 'q')
+        {
+          playing = false;
+        }
     }
-  }
   final_termios();
 
   return 0;
