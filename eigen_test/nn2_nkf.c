@@ -190,7 +190,8 @@ void olearn(double wo[HIDDENNO+1]
         int i ;/*繰り返しの制御*/
         double d ;/*重み計算に利用*/
 
-        d=(e[INPUTNO]-o)*o*(1-o) ;/*誤差の計算*/
+        d=(e[INPUTNO]-o)*o*(1-o) ;/* e[INPUTNO] <= 教師データ（期待値）誤差の計算*/
+
         for(i=0;i<HIDDENNO;++i){
                 wo[i]+=ALPHA*hi[i]*d ;/*重みの学習*/
         }
@@ -208,9 +209,12 @@ void hlearn(double wh[HIDDENNO][INPUTNO+1],double wo[HIDDENNO+1]
         double dj ;/*中間層の重み計算に利用*/
 
         for(j=0;j<HIDDENNO;++j){/*中間層の各セルjを対象*/
-                dj=hi[j]*(1-hi[j])*wo[j]*(e[INPUTNO]-o)*o*(1-o) ;
+
+                dj= hi[j] * (1-hi[j]) * wo[j] * (e[INPUTNO]-o) * o * (1-o) ;
+
                 for(i=0;i<INPUTNO;++i)/*i番目の重みを処理*/
                         wh[j][i]+=ALPHA*e[i]*dj ;
+
                 wh[j][i]+=ALPHA*(-1.0)*dj ;/*しきい値の学習*/
         }
 }
