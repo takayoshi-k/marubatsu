@@ -48,10 +48,15 @@ double drand(void) ;/*-1から1の間の乱数を生成 */
 int main()
 {
         double wh[HIDDENNO][INPUTNO+1] ;/*中間層の重み*/
+
         double wo[HIDDENNO+1] ;/*出力層の重み*/
+
         double e[MAXNO][INPUTNO+1] ;/*学習データセット*/
+
         double hi[HIDDENNO+1] ;/*中間層の出力*/
+
         double o ;/*出力*/
+
         double err=BIGNUM ;/*誤差の評価*/
         int i,j ;/*繰り返しの制御*/
         int n_of_e ;/*学習データの個数*/
