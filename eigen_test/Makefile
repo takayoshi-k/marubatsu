@@ -1,13 +1,13 @@
 TARGET = ttt
 
 # CSRC = test.cxx
-CSRC = nn2.cxx
+CSRC = NNUtil.cxx NNLayers.cxx NeuralNetwork.cxx main.cxx
 CFLAGS = -I.. -lm
 
 all: $(TARGET)
 
 $(TARGET): $(CSRC)
-	g++ -o $@ $(CFLAGS) $<
+	g++ -g -O0 -o $@ $(CFLAGS) $(CSRC)
 
 clean:
 	rm -f $(TARGET)

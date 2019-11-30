@@ -26,9 +26,11 @@ struct NNLayer {
     {
     };
 
-  Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> forward(Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> m) = 0;
+  ~NNLayer() {};
 
-  void back_propagation() = 0;
+  virtual Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> forward(Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> m) = 0;
+
+  virtual void back_propagation() = 0;
 
   void setNext(struct NNLayer *n)
     {
@@ -36,6 +38,19 @@ struct NNLayer {
       n->back = this;
     };
 
+  struct NNLayer * getNext()
+    {
+      return next;
+    };
+
+};
+
+
+class Activation : public NNLayer {
+  public:
+    virtual Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> forward(Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> m)
+      {
+      };
 };
 
 
@@ -45,14 +60,16 @@ struct AffineLayer : public NNLayer {
   Eigen::Matrix<float, 1, Eigen::Dynamic> output;
   bool needActivation;
 
-  AffineLayer() : NNLayer(), needActivation(true), next(NULL)
+  AffineLayer() : NNLayer(), needActivation(true)
     {
     }
 
-  AffineLayer(int raws, int cols) : NNLayer(), needActivation(true), next(NULL)
+  AffineLayer(int raws, int cols) : NNLayer(), needActivation(true)
     {
       resize(raws, cols);
     }
+
+  ~AffineLayer() {};
 
   void resize(int raws, int cols)
     {
@@ -68,10 +85,16 @@ struct AffineLayer : public NNLayer {
   Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> forward(Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> m)
     {
       output = (m * w) - bias;
-      if (needActivation)
-        return activate();
+      if (needActivation) activate();
+
+      if (next != NULL)
+        {
+          return next->forward(output);
+        }
       else
-        return output;
+        {
+          return output;
+        }
     }
 
   void back_propagation()
@@ -95,35 +118,34 @@ struct AffineLayer : public NNLayer {
 
 
 class NeuralNetwork {
-  NNLayer *layers;
+  NNLayer *top_layer;
+  NNLayer *last_layer;
   Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> output;
-  int layer_num;
 
   public:
     NeuralNetwork()
       {
-        tmplayers = new AffinLayer[3];
-        tmplayers[0].resize(2,2);
-        tmplayers[1].resize(2,2);
-        tmplayers[2].resize(2,2);
-        tmplayers[2].setActivation(false);
-        layer_num = 3;
-        layers = tmplayers;
+        AffineLayer * tmplayers = new AffineLayer[3];
+        tmplayers[0].resize(2,3);
+        tmplayers[1].resize(3,5);
+        tmplayers[2].resize(5,2);
+        // tmplayers[2].setActivation(false);
+
+        tmplayers[0].setNext(&tmplayers[1]);
+        tmplayers[1].setNext(&tmplayers[2]);
+
+        top_layer  = &tmplayers[0];
+        last_layer = &tmplayers[2];
       };
     ~NeuralNetwork()
       {
-        delete [] layers;
+        delete [] top_layer;
       };
 
     Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> forward(Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> input)
       {
-        Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> ret = input;
-        for(int i=0; i<layer_num; i++)
-          {
-            ret = layers[i].forward(ret);
-          }
-        output = ret;
-        return ret;
+        output = top_layer->forward(input);
+        return output;
       };
 
     void back_propagation()
