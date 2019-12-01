@@ -105,9 +105,13 @@ class AffineLayer : public NNLayer {
       {
       }
 
-    AffineLayer(int rows, int cols) : NNLayer()
+    AffineLayer(int rows, int cols, Matrix<float, Dynamic, Dynamic> *default_w=NULL) : NNLayer()
       {
         resize(rows, cols);
+        if(default_w != NULL)
+          {
+            w = *default_w;
+          }
       }
 
     ~AffineLayer() {};

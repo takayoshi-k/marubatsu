@@ -95,7 +95,7 @@ void AffineLayer::resize(int rows, int cols)
   output.resize(1, cols);
 
   w      = Matrix<float, Dynamic, Dynamic>::Random(rows, cols);
-  bias   = Matrix<float, 1, Dynamic>::Random(1, cols);
+  bias   = Matrix<float, 1, Dynamic>::Zero(1, cols);
   output = Matrix<float, 1, Dynamic>::Random(1, cols);
 }
 

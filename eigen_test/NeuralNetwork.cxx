@@ -23,12 +23,12 @@ NeuralNetwork::~NeuralNetwork()
     }
 }
 
-void NeuralNetwork::createNewLayer(int innum, int outnum, bool is_last)
+void NeuralNetwork::createNewLayer(int innum, int outnum, bool is_last, Matrix<float, Dynamic, Dynamic> *default_w)
 {
   NNLayer *new_affine;
   NNLayer *activation;
 
-  new_affine = new AffineLayer(innum, outnum);
+  new_affine = new AffineLayer(innum, outnum, default_w);
 
   if (is_last)
     {

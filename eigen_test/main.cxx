@@ -14,17 +14,23 @@ int main(void)
 #if 1
   Matrix<float, 1, 2> input[4];
   Matrix<float, 1, 1> expect[4];
+  Matrix<float, Dynamic, Dynamic> W1(2,2);
+  Matrix<float, Dynamic, Dynamic> W2(2,1);
 
   input[0] << 0, 0; expect[0] << 0;
   input[1] << 0, 1; expect[1] << 1;
   input[2] << 1, 0; expect[2] << 1;
   input[3] << 1, 1; expect[3] << 0;
 
-  nn.createNewLayer(2,2);
-  nn.createNewLayer(2,1, true);
+  W1 << -0.0032973, -0.02393722, -0.02107663, 0.01280219 ;
+  W2 << -0.01024167, -0.01514217;
+
+  nn.createNewLayer(2,2, false, &W1);
+  nn.createNewLayer(2,1, true,  &W2);
 
   loss = 100.f;
-  while (loss > 0.001f)
+  // while (loss > 0.001f)
+  for(int j=0; j<10; j++)
     {
       loss = 0.f;
       for(int i=0; i<4; i++)

@@ -22,7 +22,7 @@ class NeuralNetwork {
       };
     ~NeuralNetwork();
 
-    void createNewLayer(int innum, int outnum, bool is_last=false);
+    void createNewLayer(int innum, int outnum, bool is_last=false, Matrix<float, Dynamic, Dynamic> *default_w=NULL);
     void print_layers();
     Matrix<float, Dynamic, Dynamic> forward(Matrix<float, Dynamic, Dynamic> input);
     float backward(float train_ratio, Matrix<float, Dynamic, Dynamic> m);
