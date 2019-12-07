@@ -29,6 +29,7 @@ int main(void)
   nn.createNewLayer(2,1, true,  &W2);
 
   loss = 100.f;
+  nn.printnet();
   // while (loss > 0.001f)
   for(int j=0; j<10; j++)
     {
@@ -38,10 +39,12 @@ int main(void)
           // std::cout << "==== " << i+1 << " ===="  << std::endl;
           out = nn.forward( input[i] );
           loss += nn.backward(0.1f, expect[i]);
+          nn.printnet();
           // std::cout << "   out = " << out << std::endl;
         }
       loss /= 4;
       std::cout << "loss = " << loss << std::endl;
+      nn.printnet();
     }
 
   for(int i=0; i<4; i++)

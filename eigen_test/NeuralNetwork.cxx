@@ -54,6 +54,15 @@ void NeuralNetwork::createNewLayer(int innum, int outnum, bool is_last, Matrix<f
 }
 
 
+void NeuralNetwork::printnet()
+{
+  for(NNLayer *layer = top_layer; layer != NULL; layer = layer->getNext())
+    {
+      layer->printnet();
+    };
+}
+
+
 void NeuralNetwork::print_layers()
 {
   for(NNLayer *layer = top_layer; layer != NULL; layer = layer->getNext())

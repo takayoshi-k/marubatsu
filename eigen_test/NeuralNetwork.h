@@ -26,6 +26,7 @@ class NeuralNetwork {
     void print_layers();
     Matrix<float, Dynamic, Dynamic> forward(Matrix<float, Dynamic, Dynamic> input);
     float backward(float train_ratio, Matrix<float, Dynamic, Dynamic> m);
+    void printnet();
 };
 
 #endif  // __NEURALNETWORK_H__

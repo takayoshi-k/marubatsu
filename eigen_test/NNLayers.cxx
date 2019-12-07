@@ -1,3 +1,4 @@
+#include <iostream>
 
 #include "NNUtil.h"
 #include "NNLayers.h"
@@ -98,6 +99,15 @@ void AffineLayer::resize(int rows, int cols)
   bias   = Matrix<float, 1, Dynamic>::Zero(1, cols);
   output = Matrix<float, 1, Dynamic>::Random(1, cols);
 }
+
+
+void AffineLayer::printnet()
+{
+  std::cout << "== AffineLayer (" << w.rows() << "," << w.cols() << ") ==" << std::endl;
+  std::cout << "w = " << w << std::endl;
+  std::cout << "b = " << bias << std::endl;
+}
+
 
 Matrix<float, Dynamic, Dynamic> AffineLayer::forward(Matrix<float, Dynamic, Dynamic> m)
 {
