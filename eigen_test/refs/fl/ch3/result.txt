@@ -14,7 +14,7 @@
 
   Layer:2 = 4
       => outputside:d3, w3, currentside:o2
-      // for outputs = 1
+      // for outputs currentLayer = 4
         // for inputs = 4
      d2[0] = (w3[0][0] * d3[0]) * o2[0] * (1-o2[0])
      d2[1] = (w3[0][1] * d3[0]) * o2[1] * (1-o2[1])
@@ -86,4 +86,98 @@
 
        w0[3][0] -= ETA * d0[3] * input_data[0]
        w0[3][1] -= ETA * d0[3] * input_data[1]
+
+
+
+
+NN NUM 5, 4, 3, 1 case
+==== Back Propagating...
+  Layer:3
+     d3[0] = y[0] - t[0]
+  Layer:2
+     d2[0] = w3[0][0]*d3[0] + :: And sigmoid : o2[0]*(1 - o2[0])*that
+     d2[1] = w3[0][1]*d3[0] + :: And sigmoid : o2[1]*(1 - o2[1])*that
+     d2[2] = w3[0][2]*d3[0] + :: And sigmoid : o2[2]*(1 - o2[2])*that
+  Layer:1
+     d1[0] = w2[0][0]*d2[0] + w2[1][0]*d2[1] + w2[2][0]*d2[2] + :: And sigmoid
+: o1[0]*(1 - o1[0])*that
+     d1[1] = w2[0][1]*d2[0] + w2[1][1]*d2[1] + w2[2][1]*d2[2] + :: And sigmoid
+: o1[1]*(1 - o1[1])*that
+     d1[2] = w2[0][2]*d2[0] + w2[1][2]*d2[1] + w2[2][2]*d2[2] + :: And sigmoid
+: o1[2]*(1 - o1[2])*that
+     d1[3] = w2[0][3]*d2[0] + w2[1][3]*d2[1] + w2[2][3]*d2[2] + :: And sigmoid
+: o1[3]*(1 - o1[3])*that
+  Layer:0
+     d0[0] = w1[0][0]*d1[0] + w1[1][0]*d1[1] + w1[2][0]*d1[2] + w1[3][0]*d1[3]
++ :: And sigmoid : o0[0]*(1 - o0[0])*that
+     d0[1] = w1[0][1]*d1[0] + w1[1][1]*d1[1] + w1[2][1]*d1[2] + w1[3][1]*d1[3]
++ :: And sigmoid : o0[1]*(1 - o0[1])*that
+     d0[2] = w1[0][2]*d1[0] + w1[1][2]*d1[1] + w1[2][2]*d1[2] + w1[3][2]*d1[3]
++ :: And sigmoid : o0[2]*(1 - o0[2])*that
+     d0[3] = w1[0][3]*d1[0] + w1[1][3]*d1[1] + w1[2][3]*d1[2] + w1[3][3]*d1[3]
++ :: And sigmoid : o0[3]*(1 - o0[3])*that
+     d0[4] = w1[0][4]*d1[0] + w1[1][4]*d1[1] + w1[2][4]*d1[2] + w1[3][4]*d1[3]
++ :: And sigmoid : o0[4]*(1 - o0[4])*that
+   === update layer:0 ===
+       w0[0][0] -= ETA*d0[0]*last_input[0]
+       w0[0][1] -= ETA*d0[0]*last_input[1]
+
+       w0[1][0] -= ETA*d0[1]*last_input[0]
+       w0[1][1] -= ETA*d0[1]*last_input[1]
+
+       w0[2][0] -= ETA*d0[2]*last_input[0]
+       w0[2][1] -= ETA*d0[2]*last_input[1]
+
+       w0[3][0] -= ETA*d0[3]*last_input[0]
+       w0[3][1] -= ETA*d0[3]*last_input[1]
+
+       w0[4][0] -= ETA*d0[4]*last_input[0]
+       w0[4][1] -= ETA*d0[4]*last_input[1]
+
+   === update layer:1 ===
+       w1[0][0] -= ETA*d1[0]*last_input[0]
+       w1[0][1] -= ETA*d1[0]*last_input[1]
+       w1[0][2] -= ETA*d1[0]*last_input[2]
+       w1[0][3] -= ETA*d1[0]*last_input[3]
+       w1[0][4] -= ETA*d1[0]*last_input[4]
+
+       w1[1][0] -= ETA*d1[1]*last_input[0]
+       w1[1][1] -= ETA*d1[1]*last_input[1]
+       w1[1][2] -= ETA*d1[1]*last_input[2]
+       w1[1][3] -= ETA*d1[1]*last_input[3]
+       w1[1][4] -= ETA*d1[1]*last_input[4]
+
+       w1[2][0] -= ETA*d1[2]*last_input[0]
+       w1[2][1] -= ETA*d1[2]*last_input[1]
+       w1[2][2] -= ETA*d1[2]*last_input[2]
+       w1[2][3] -= ETA*d1[2]*last_input[3]
+       w1[2][4] -= ETA*d1[2]*last_input[4]
+
+       w1[3][0] -= ETA*d1[3]*last_input[0]
+       w1[3][1] -= ETA*d1[3]*last_input[1]
+       w1[3][2] -= ETA*d1[3]*last_input[2]
+       w1[3][3] -= ETA*d1[3]*last_input[3]
+       w1[3][4] -= ETA*d1[3]*last_input[4]
+
+   === update layer:2 ===
+       w2[0][0] -= ETA*d2[0]*last_input[0]
+       w2[0][1] -= ETA*d2[0]*last_input[1]
+       w2[0][2] -= ETA*d2[0]*last_input[2]
+       w2[0][3] -= ETA*d2[0]*last_input[3]
+
+       w2[1][0] -= ETA*d2[1]*last_input[0]
+       w2[1][1] -= ETA*d2[1]*last_input[1]
+       w2[1][2] -= ETA*d2[1]*last_input[2]
+       w2[1][3] -= ETA*d2[1]*last_input[3]
+
+       w2[2][0] -= ETA*d2[2]*last_input[0]
+       w2[2][1] -= ETA*d2[2]*last_input[1]
+       w2[2][2] -= ETA*d2[2]*last_input[2]
+       w2[2][3] -= ETA*d2[2]*last_input[3]
+
+   === update layer:3 ===
+       w3[0][0] -= ETA*d3[0]*last_input[0]
+       w3[0][1] -= ETA*d3[0]*last_input[1]
+       w3[0][2] -= ETA*d3[0]*last_input[2]
+
 

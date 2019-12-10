@@ -146,10 +146,21 @@ struct nn_layer *forward_nn_layer(struct nn_layer *layer, struct nn_layer *input
   return layer;
 }
 
-struct nn_layer *learning_nn_layer( struct nn_layer *layer,
-                                    struct nn_layer *input,
-                                    struct nn_layer *expect)
+void calc_delta( struct nn_layer *this_layer,
+                 struct nn_layer *after_layer)
 {
+  int in_idx, out_idx;
+  for (out_idx=0; out_idx
+}
+
+void calc_delta_back( struct nn_layer *this_layer,
+                     struct nn_layer *exp_layer)
+{
+  int i;
+  for (i=0; i<this_layer->outputs; i++)
+    {
+      this_layer->delta[i] = this_layer->out[i] - exp_layer->out[i];
+    }
 }
 
 
