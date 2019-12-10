@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>サンプル</title>
+<script src="test.js"></script>
+</head>
+<body>
+
+<p>
+<input type="radio" name="fx" id="fx1" value="1" onchange="program1()" checked><label for="fx1">f(x)=x<sup>2</sup></label>
+<input type="radio" name="fx" id="fx2" value="2" onchange="program1()"><label for="fx2">f(x)=abs(x)</label>
+<input type="radio" name="fx" id="fx3" value="3" onchange="program1()"><label for="fx3">f(x)=sin(PI･x)</label>
+<input type="radio" name="fx" id="fx4" value="4" onchange="program1()"><label for="fx4">f(x)=sin(2PI･x)</label>
+<input type="button" value="再実行" onclick="program1()">
+</p>
+
+
+<div class="border300"><canvas class="canvas300" id="canvas1"></canvas></div>
+<pre class="source5" id="result1"></pre>
+
+</body>
+</html>
+

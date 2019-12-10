@@ -38,7 +38,8 @@ double sigmoid(double u)
  */
 
 struct nn_layer {
-  int inputs, int outputs;
+  int inputs;
+  int outputs;
   double *W;
   double *bias;
   double *out;
@@ -83,7 +84,7 @@ struct nn_layer * init_nn_layer(int in_neurons, int out_neurons)
           return NULL;
         }
 
-      ret->delta  = (double *)malloc(sizeof(double) * in_neurons);
+      ret->delta  = (double *)malloc(sizeof(double) * out_neurons);
       if (ret->out == NULL)
         {
           free(ret->out);
@@ -123,6 +124,7 @@ void free_nn_layer(struct nn_layer *layer)
   free(layer->W);
   free(layer->bias);
   free(layer->out);
+  free(layer->delta);
   free(layer);
 }
 
@@ -315,35 +317,6 @@ void lerning(struct lerning_data *input, struct mid_layer *mid, struct out_layer
     }
 }
 
-int test_nn_layer(struct lerning_data *input, int num)
-{
-  int i;
-
-  struct nn_layer **input_layer;
-  struct nn_layer *mid_nn_layer;
-  struct nn_layer *out_nn_layer;
-
-  input_layer = (struct nn_layer**)malloc(sizeof(struct nn_layer*) * num);
-
-  for(i=0; i<num; i++)
-    {
-      input_layer[i] = init_nn_layer(1, 2);
-      init_input(&input_layer[i], input[i].input);
-    }
-
-  mid_nn_layer = init_nn_layer(2, 2);
-  out_nn_layer = init_nn_layer(2, 1);
-
-  for(i=0; i<num; i++)
-    {
-      forward_nn_layer( out_nn_layer,
-                        forward_nn_layer( mid_nn_layer, input_layer[i] )
-                      );
-    }
-  printf("out_nn_layer = %lf\n", out_nn_layer->out[0]);
-}
-
-
 void sync_params(struct mid_layer *mid, struct out_layer *out, struct nn_layer *mid_nn, struct nn_layer *out_nn)
 {
   int i, j;
@@ -364,6 +337,63 @@ void sync_params(struct mid_layer *mid, struct out_layer *out, struct nn_layer *
       LAYER_W(out_nn, i, 0) = out->w[i];
     }
   out_nn->bias[0] = out->b;
+}
+
+
+void print_nn(struct nn_layer *nn)
+{
+  int in_idx, out_idx;
+
+  printf("NN(%d,%d) ", nn->inputs, nn->outputs);
+  FOR_OUTPUTS(nn, out_idx)
+    {
+      FOR_INPUTS(nn, in_idx)
+        {
+          printf("%lf ", LAYER_W(nn, in_idx, out_idx));
+        }
+      printf("%lf(b)\n", nn->bias[out_idx]);
+    }
+}
+
+
+int test_nn_layer(struct lerning_data *input, int num, struct mid_layer *mid, struct out_layer *out)
+{
+  int i;
+
+  struct nn_layer **input_layer;
+  struct nn_layer *mid_nn_layer;
+  struct nn_layer *out_nn_layer;
+
+  input_layer = (struct nn_layer**)malloc(sizeof(struct nn_layer*) * num);
+
+  for(i=0; i<num; i++)
+    {
+      input_layer[i] = init_nn_layer(1, 2);
+      init_input(input_layer[i], input[i].input);
+    }
+
+  mid_nn_layer = init_nn_layer(2, 2);
+  out_nn_layer = init_nn_layer(2, 1);
+
+  sync_params(mid, out, mid_nn_layer, out_nn_layer);
+  printf("Synced parameters....\n");
+  printweight(mid, out);
+  print_nn(mid_nn_layer);
+  print_nn(out_nn_layer);
+
+
+  // for(i=0; i<num; i++)
+  for(i=0; i<1; i++)
+    {
+      forward_nn_layer( out_nn_layer,
+                        forward_nn_layer( mid_nn_layer, input_layer[i] )
+                      );
+    }
+  printf("\nout_nn_layer = %lf\n", out_nn_layer->out[0]);
+
+  free_nn_layer(mid_nn_layer);
+  free_nn_layer(out_nn_layer);
+  free(input_layer);
 }
 
 
